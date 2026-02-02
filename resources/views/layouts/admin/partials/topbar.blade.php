@@ -37,7 +37,7 @@
         </button>
 
         <div class="flex flex-col">
-            <h1 class="text-lg font-semibold text-gray-700">@yield('title')</h1>
+            <!-- <h1 class="text-lg font-semibold text-gray-700">@yield('title')</h1> -->
             <span class="text-xs text-gray-400" x-text="greeting + ', {{ auth()->user()->name }}'"></span>
         </div>
     </div>
