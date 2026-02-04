@@ -10,8 +10,8 @@ class RoomTypeController extends Controller
     public function index(Request $request)
     {
         $roomTypes = RoomType::when($request->search, function ($q) use ($request) {
-                $q->where('name', 'like', "%{$request->search}%");
-            })
+            $q->where('name', 'like', "%{$request->search}%");
+        })
             ->latest()
             ->paginate(10);
 
@@ -26,7 +26,7 @@ class RoomTypeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'        => 'required|string|max:50|unique:room_types,name',
+            'name' => 'required|string|max:50|unique:room_types,name',
             'description' => 'nullable|string',
         ]);
 
@@ -45,9 +45,23 @@ class RoomTypeController extends Controller
     public function update(Request $request, RoomType $roomType)
     {
         $request->validate([
-            'name'        => 'required|string|max:50|unique:room_types,name,' . $roomType->id,
-            'description' => 'nullable|string',
+            'name' => [
+                'required',
+                'string',
+                'max:50',
+                'unique:room_types,name,' . ($roomType->id ?? 'NULL'),
+                'regex:/^[A-Za-z\s]+$/', //  Only letters allowed
+            ],
+            'description' => [
+                'required',
+                'string',
+                'regex:/^[A-Za-z0-9\s\.,\-]+$/', // letters, numbers, spaces allowed (no special chars)
+            ],
+        ], [
+            'name.regex' => 'The room type name may only contain letters.',
+            'description.regex' => 'Description contains invalid characters.',
         ]);
+
 
         $roomType->update($request->only('name', 'description'));
 

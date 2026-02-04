@@ -7,59 +7,69 @@ use Illuminate\Http\Request;
 
 class AmenityController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $amenities = Amenity::when($request->search, function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->search}%");
+            })
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.amenities.index', compact('amenities'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('admin.amenities.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' =>
+                ['required','string','max:100','unique:amenities,name','regex:/^[A-Za-z\s]+$/'],
+            'description' => 'nullable|string'
+        ],
+        [
+            'name.regex' => 'Only letters and spaces are allowed.'
+        ]);
+
+        Amenity::create($request->only('name','description'));
+
+        return redirect()
+            ->route('admin.amenities.index')
+            ->with('success','Amenity added successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Amenity $amenity)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Amenity $amenity)
     {
-        //
+        return view('admin.amenities.edit', compact('amenity'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Amenity $amenity)
     {
-        //
+        $request->validate([
+            'name' =>
+                ['required','string','max:100','unique:amenities,name,'.$amenity->id,'regex:/^[A-Za-z\s]+$/'],
+            'description' => 'nullable|string'
+        ],
+        [
+            'name.regex' => 'Only letters and spaces are allowed.'
+        ]);
+
+        $amenity->update($request->only('name','description'));
+
+        return redirect()
+            ->route('admin.amenities.index')
+            ->with('success', 'Amenity updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Amenity $amenity)
     {
-        //
+        $amenity->delete();
+
+        return redirect()
+            ->route('admin.amenities.index')
+            ->with('success', 'Amenity deleted successfully');
     }
 }

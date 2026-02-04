@@ -1,6 +1,6 @@
 @extends('layouts.admin.app')
 
-@section('title', 'HDC Hotel | Dashboard')
+@section('title', ($appSetting->app_name ?? 'HMS') . ' | Dashboard')
 
 @section('contents')
 
