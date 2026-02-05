@@ -4,76 +4,66 @@
 @section('contents')
 
     <div x-data="{
-            showEdit:false,
-            showView:false,
-            editData:{},
-            viewData:{}
-        }" class="relative">
+                showView:false,
+                showEdit:false,
+                view:{},
+                edit:{}
+            }">
 
         <x-table title="Room Types" :columns="['S.N', 'Name', 'Description', 'Actions']">
 
-            {{-- ACTION BUTTON --}}
             <x-slot name="action">
-                <a href="{{ route('admin.room-types.create') }}" class="px-4 py-2 rounded-lg text-white shadow 
-                      bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] transition">
-                    <i class="fa fa-plus mr-1"></i> Add Room Type
+                <a href="{{ route('admin.room-types.create') }}"
+                    class="btn-primary px-4 py-2 rounded-lg shadow text-sm flex items-center gap-2">
+                    <i class="fa fa-plus"></i> Add Room Type
                 </a>
             </x-slot>
 
-            {{-- FILTERS --}}
             <x-slot name="filters">
                 <form method="GET" class="flex gap-3">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search..."
-                        class="border px-3 py-2 rounded w-48">
+                    <input type="text" name="search" value="{{ request('search') }}" class="border px-3 py-2 rounded w-48"
+                        placeholder="Search...">
 
-                    <button class="px-4 py-2 rounded text-white 
-                               bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] transition">
-                        Apply
-                    </button>
+                    <button class="btn-primary px-4 py-2 rounded shadow">Apply</button>
                 </form>
             </x-slot>
 
-            {{-- TABLE ROWS --}}
-            @foreach ($roomTypes as $type)
+            @foreach($roomTypes as $t)
                 <tr class="hover:bg-gray-50">
 
-                    {{-- SN NUMBER --}}
-                    <td class="px-4 py-3">
-                        {{ ($roomTypes->currentPage() - 1) * $roomTypes->perPage() + $loop->iteration }}
-                    </td>
+                    <td class="px-4 py-3">{{ $loop->iteration }}</td>
 
-                    <td class="px-4 py-3 font-semibold">{{ $type->name }}</td>
-                    <td class="px-4 py-3 text-gray-600">{{ Str::limit($type->description, 60) }}</td>
-                    <!-- <td class="px-4 py-3">{{ $type->created_at->format('d M Y') }}</td> -->
+                    <td class="px-4 py-3 font-semibold">{{ $t->name }}</td>
+
+                    <td class="px-4 py-3 text-gray-600">{{ Str::limit($t->description, 60) }}</td>
 
                     <td class="px-4 py-3 flex items-center gap-3">
 
                         {{-- VIEW --}}
                         <button @click="
-                    showView = true;
-                    viewData = {
-                        id:'{{ $type->id }}',
-                        name:'{{ $type->name }}',
-                        description:`{{ $type->description }}`,
-                    };
-                " class="text-green-600 hover:text-green-800">
+                                        showView=true;
+                                        view={
+                                            name:'{{ $t->name }}',
+                                            description:`{{ $t->description }}`
+                                        };
+                                    " class="text-green-600 text-mg hover:text-green-800">
                             <i class="fa fa-eye"></i>
                         </button>
 
                         {{-- EDIT --}}
                         <button @click="
-                    showEdit = true;
-                    editData = {
-                        id:'{{ $type->id }}',
-                        name:'{{ $type->name }}',
-                        description:`{{ $type->description }}`
-                    };
-                " class="text-blue-600 hover:text-blue-800">
+                                        showEdit=true;
+                                        edit={
+                                            id:'{{ $t->id }}',
+                                            name:'{{ $t->name }}',
+                                            description:`{{ $t->description }}`
+                                        };
+                                    " class="text-blue-600 text-mg hover:text-blue-800">
                             <i class="fa fa-edit"></i>
                         </button>
 
                         {{-- DELETE --}}
-                        <button onclick="deleteRoomType({{ $type->id }})" class="text-red-600 hover:text-red-800">
+                        <button onclick="deleteRoomType({{ $t->id }})" class="text-red-600 text-mg hover:text-red-800">
                             <i class="fa fa-trash"></i>
                         </button>
 
@@ -82,75 +72,85 @@
                 </tr>
             @endforeach
 
-
         </x-table>
 
-        {{-- PAGINATION --}}
         <div class="mt-4">
             {{ $roomTypes->links() }}
         </div>
 
-        {{-- ================================================= --}}
-        {{-- =============== VIEW MODAL ======================= --}}
-        {{-- ================================================= --}}
-        <div x-show="showView" x-cloak x-transition.opacity
-            class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center">
 
-            <div x-transition.scale class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg relative">
-                {{-- Close Button --}}
-                <button @click="showView=false" class="absolute top-3 right-4 text-gray-500 hover:text-gray-700 text-xl">
-                    &times;
-                </button>
+
+        <!-- VIEW MODAL -->
+        <div x-show="showView" x-cloak class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center"
+            x-transition.opacity>
+
+            <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg relative" x-transition.scale>
+
+                <button @click="showView=false"
+                    class="absolute top-3 right-4 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
 
                 <h2 class="text-xl font-bold mb-4">Room Type Details</h2>
 
-                <div class="space-y-3">
-                    <p><strong>Name:</strong> <span x-text="viewData.name"></span></p>
-                    <p><strong>Description:</strong> <span x-text="viewData.description"></span></p>
-                    <!-- <p><strong>Created At:</strong> <span x-text="viewData.created_at"></span></p> -->
+                <div class="space-y-3 text-gray-700">
+                    <p><strong>Name:</strong> <span x-text="view.name"></span></p>
+                    <p><strong>Description:</strong> <span x-text="view.description"></span></p>
                 </div>
 
                 <div class="flex justify-end mt-6">
-                    <button @click="showView=false" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700
-                           hover:bg-gray-100 transition font-medium">
+                    <button @click="showView=false" class="btn-secondary px-4 py-2 rounded">
                         Close
                     </button>
                 </div>
+
             </div>
 
         </div>
 
-        {{-- ================================================= --}}
-        {{-- =============== EDIT MODAL ======================= --}}
-        {{-- ================================================= --}}
-        <div x-show="showEdit" x-cloak x-transition.opacity
-            class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center">
 
-            <div x-transition.scale class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg relative">
-                {{-- Close Button --}}
-                <button @click="showEdit=false" class="absolute top-3 right-4 text-gray-500 hover:text-gray-700 text-xl">
-                    &times;
+        <!-- ===================== EDIT MODAL (ROOM TYPES) ===================== -->
+        <div x-show="showEdit" x-cloak class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center"
+            x-transition.opacity>
+
+            <div x-transition.scale class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg relative">
+
+                {{-- CLOSE BUTTON --}}
+                <button @click="showEdit=false" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl">
+                    <i class="fa fa-times"></i>
                 </button>
 
-                <h2 class="text-xl font-bold mb-4">Edit Room Type</h2>
+                {{-- TITLE --}}
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                    Edit Room Type
+                </h2>
 
-                <form method="POST" :action="`/admin/room-types/${editData.id}`">
+                <form method="POST" :action="`/admin/room-types/${edit.id}`">
                     @csrf
                     @method('PUT')
 
-                    <input class="w-full border rounded-lg px-3 py-2 mb-4" name="name" x-model="editData.name">
+                    {{-- NAME --}}
+                    <div class="mb-5">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Name</label>
+                        <input type="text" name="name" x-model="edit.name" class="w-full border border-gray-300 rounded-lg px-4 py-2
+                                  focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] transition">
+                    </div>
 
-                    <textarea class="w-full border rounded-lg px-3 py-2 mb-4" name="description" rows="4"
-                        x-model="editData.description"></textarea>
+                    {{-- DESCRIPTION --}}
+                    <div class="mb-5">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                        <textarea name="description" rows="4" x-model="edit.description"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2
+                                     focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] transition"></textarea>
+                    </div>
 
-                    <div class="flex justify-end gap-3">
-                        <button type="button" @click="showEdit=false" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700
-                               hover:bg-gray-100 transition font-medium">
+                    {{-- BUTTONS --}}
+                    <div class="flex justify-end gap-4 mt-6">
+                        <button type="button" @click="showEdit=false" class="px-5 py-2 rounded-lg border border-gray-300 text-gray-700
+                                   hover:bg-gray-100 transition font-medium">
                             Cancel
                         </button>
 
-                        <button class="px-4 py-2 rounded-lg text-white font-medium shadow-sm
-                               bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] transition">
+                        <button class="px-6 py-2 rounded-lg text-white font-semibold shadow
+                                   bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] transition">
                             Update
                         </button>
                     </div>
@@ -161,34 +161,32 @@
         </div>
 
 
-        {{-- DELETE SCRIPT --}}
-        <script>
-            function deleteRoomType(id) {
-                Swal.fire({
-                    title: "Delete Room Type?",
-                    text: "This action cannot be undone.",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonText: "Delete",
-                    cancelButtonText: "Cancel",
-                    customClass: {
-                        confirmButton: "swal-confirm-btn",
-                        cancelButton: "swal-cancel-btn"
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        let f = document.createElement('form');
-                        f.method = 'POST';
-                        f.action = `/admin/room-types/${id}`;
-                        f.innerHTML = `
-                    @csrf
-                    @method('DELETE')
-                `;
-                        document.body.appendChild(f);
-                        f.submit();
-                    }
-                });
-            }
-        </script>
+
+
+    </div>
+
+    {{-- DELETE SCRIPT --}}
+    <script>
+        function deleteRoomType(id) {
+            Swal.fire({
+                title: "Delete Room Type?",
+                text: "This action cannot be undone.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Delete",
+                cancelButtonText: "Cancel",
+                customClass: { confirmButton: "swal-confirm-btn", cancelButton: "swal-cancel-btn" }
+            }).then(res => {
+                if (res.isConfirmed) {
+                    let f = document.createElement('form');
+                    f.method = 'POST';
+                    f.action = `/admin/room-types/${id}`;
+                    f.innerHTML = `@csrf @method('DELETE')`;
+                    document.body.appendChild(f);
+                    f.submit();
+                }
+            });
+        }
+    </script>
 
 @endsection
