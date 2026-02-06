@@ -43,14 +43,36 @@
 
                 <td class="px-4 py-3 font-semibold">Rs. {{ number_format($s->price, 2) }}</td>
 
-                <td class="px-4 py-3">
-                    <span class="px-3 py-1 rounded-full text-xs font-semibold
-                        {{ $s->availability_status == 'available'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-red-100 text-red-700' }}">
-                        {{ ucfirst($s->availability_status) }}
-                    </span>
-                </td>
+               {{-- STATUS (INLINE UPDATE) --}}
+<td class="px-4 py-3">
+    <form method="POST"
+          action="{{ route('admin.room-services.update-status', $s->id) }}"
+          x-data
+          @change="$event.target.form.submit()">
+
+        @csrf
+        @method('PUT') {{-- OR PUT based on your route --}}
+
+        <select name="availability_status"
+            class="text-xs font-semibold rounded px-2 py-1 border cursor-pointer
+                {{ $s->availability_status == 'available'
+                    ? 'bg-green-100 text-green-700 border-green-200'
+                    : 'bg-red-100 text-red-700 border-red-200'
+                }}">
+
+            <option value="available" {{ $s->availability_status == 'available' ? 'selected' : '' }}>
+                Available
+            </option>
+
+            <option value="unavailable" {{ $s->availability_status == 'unavailable' ? 'selected' : '' }}>
+                Unavailable
+            </option>
+
+        </select>
+
+    </form>
+</td>
+
 
                 <td class="px-4 py-3 text-gray-600">{{ Str::limit($s->description, 60) }}</td>
 

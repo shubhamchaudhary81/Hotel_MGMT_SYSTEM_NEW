@@ -141,4 +141,18 @@ class MenuItemController extends Controller
 
         return redirect()->back()->with('success', 'Menu item deleted successfully');
     }
+
+    public function updateStatus(Request $request, MenuItem $menuItem)
+    {
+        $request->validate([
+            'is_available' => 'required|boolean'
+        ]);
+
+        $menuItem->update([
+            'is_available' => $request->is_available
+        ]);
+
+    return redirect()->back()->with('success', 'Status updated successfully');
+    }
+
 }

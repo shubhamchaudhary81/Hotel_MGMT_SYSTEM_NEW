@@ -4,11 +4,11 @@
 @section('contents')
 
     <div x-data="{
-                showView:false,
-                showEdit:false,
-                view:{},
-                edit:{}
-            }">
+                        showView:false,
+                        showEdit:false,
+                        view:{},
+                        edit:{}
+                    }">
 
         <x-table title="Menu Items" :columns="['S.N', 'Item Name', 'Category', 'Price', 'Availability', 'Actions']">
 
@@ -39,12 +39,12 @@
 
                     {{-- IMAGE --}}
                     <!-- <td class="px-4 py-3">
-                                                @if($item->menu_image)
-                                                    <img src="{{ asset($item->menu_image) }}" class="w-12 h-12 rounded object-cover border">
-                                                @else
-                                                    <span class="text-gray-400 text-sm">No Image</span>
-                                                @endif
-                                            </td> -->
+                                                                @if($item->menu_image)
+                                                                    <img src="{{ asset($item->menu_image) }}" class="w-12 h-12 rounded object-cover border">
+                                                                @else
+                                                                    <span class="text-gray-400 text-sm">No Image</span>
+                                                                @endif
+                                                            </td> -->
 
                     {{-- NAME --}}
                     <td class="px-4 py-3 font-semibold">{{ $item->item_name }}</td>
@@ -61,11 +61,32 @@
 
                     {{-- STATUS --}}
                     <td class="px-4 py-3">
-                        @if($item->is_available)
-                            <span class="px-2 py-1 rounded bg-green-100 text-green-700 text-xs font-semibold">Available</span>
-                        @else
-                            <span class="px-2 py-1 rounded bg-red-100 text-red-700 text-xs font-semibold">Unavailable</span>
-                        @endif
+
+                        <form method="POST" action="{{ route('admin.menu-items.update-status', $item->id) }}" x-data
+                            @change="$event.target.form.submit()">
+
+                            @csrf
+                            @method('PUT')
+
+
+                            <select name="is_available" class="text-xs font-semibold rounded px-2 py-1 border cursor-pointer
+                        {{ $item->is_available
+                ? 'bg-green-100 text-green-700 border-green-200'
+                : 'bg-red-100 text-red-700 border-red-200'
+                        }}">
+
+                                <option value="1" {{ $item->is_available ? 'selected' : '' }}>
+                                    Available
+                                </option>
+
+                                <option value="0" {{ !$item->is_available ? 'selected' : '' }}>
+                                    Unavailable
+                                </option>
+
+                            </select>
+
+                        </form>
+
                     </td>
 
                     {{-- ACTIONS --}}
@@ -73,37 +94,37 @@
 
                         {{-- VIEW --}}
                         <button @click="
-                                                    showView = true;
-                                                    view = {
-                                                        image: '{{ $item->menu_image ? asset($item->menu_image) : '' }}',
-                                                        name: '{{ $item->item_name }}',
-                                                        category: '{{ $item->category->name }}',
-                                                        price: '{{ number_format($item->price, 2) }}',
-                                                        description: `{{ $item->item_description }}`,
-                                                        availability: '{{ $item->is_available ? 'Available' : 'Unavailable' }}'
-                                                    };
-                                                " class="text-green-600 hover:text-green-800 text-mg">
+                                                                    showView = true;
+                                                                    view = {
+                                                                        image: '{{ $item->menu_image ? asset($item->menu_image) : '' }}',
+                                                                        name: '{{ $item->item_name }}',
+                                                                        category: '{{ $item->category->name }}',
+                                                                        price: '{{ number_format($item->price, 2) }}',
+                                                                        description: `{{ $item->item_description }}`,
+                                                                        availability: '{{ $item->is_available ? 'Available' : 'Unavailable' }}'
+                                                                    };
+                                                                " class="text-green-600 hover:text-green-800 text-mg">
                             <i class="fa fa-eye"></i>
                         </button>
 
                         {{-- EDIT --}}
                         {{-- EDIT --}}
                         <button @click="
-                                    showEdit = true;
-                                    edit = {
-                                        id: '{{ $item->id }}',
-                                        name: '{{ $item->item_name }}',
-                                        category_id: '{{ $item->category_id }}',
-                                        price: '{{ $item->price }}',
-                                        description:`{{ $item->item_description }}`,
+                                                    showEdit = true;
+                                                    edit = {
+                                                        id: '{{ $item->id }}',
+                                                        name: '{{ $item->item_name }}',
+                                                        category_id: '{{ $item->category_id }}',
+                                                        price: '{{ $item->price }}',
+                                                        description:`{{ $item->item_description }}`,
 
-                                        // FIXED — USE 'image' instead of 'img'
-                                        image: '{{ $item->menu_image ? asset($item->menu_image) : '' }}',
-                                        preview: null,
+                                                        // FIXED — USE 'image' instead of 'img'
+                                                        image: '{{ $item->menu_image ? asset($item->menu_image) : '' }}',
+                                                        preview: null,
 
-                                        availability:'{{ $item->is_available }}'
-                                    };
-                                " class="text-blue-600 hover:text-blue-800 text-mg">
+                                                        availability:'{{ $item->is_available }}'
+                                                    };
+                                                " class="text-blue-600 hover:text-blue-800 text-mg">
                             <i class="fa fa-edit"></i>
                         </button>
 
@@ -185,8 +206,8 @@
                     <div class="mb-5">
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Item Name</label>
                         <input type="text" name="item_name" x-model="edit.name" class="w-full border border-gray-300 rounded-lg px-4 py-2
-                                          focus:ring-[var(--primary-color)]
-                                          focus:border-[var(--primary-color)] transition">
+                                                  focus:ring-[var(--primary-color)]
+                                                  focus:border-[var(--primary-color)] transition">
                     </div>
 
                     {{-- CATEGORY --}}
@@ -194,8 +215,8 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Category</label>
 
                         <select name="category_id" x-model="edit.category_id" class="w-full border border-gray-300 rounded-lg px-4 py-2
-                       focus:ring-[var(--primary-color)]
-                       focus:border-[var(--primary-color)] transition">
+                               focus:ring-[var(--primary-color)]
+                               focus:border-[var(--primary-color)] transition">
                             @foreach($categories as $cat)
                                 <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                             @endforeach
@@ -207,16 +228,16 @@
                     <div class="mb-5">
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Price (Rs.)</label>
                         <input type="text" name="price" x-model="edit.price" class="w-full border border-gray-300 rounded-lg px-4 py-2
-                                          focus:ring-[var(--primary-color)]
-                                          focus:border-[var(--primary-color)] transition">
+                                                  focus:ring-[var(--primary-color)]
+                                                  focus:border-[var(--primary-color)] transition">
                     </div>
 
                     {{-- DESCRIPTION --}}
                     <div class="mb-5">
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
                         <textarea name="item_description" rows="4" x-model="edit.description" class="w-full border border-gray-300 rounded-lg px-4 py-2
-                                             focus:ring-[var(--primary-color)]
-                                             focus:border-[var(--primary-color)] transition"></textarea>
+                                                     focus:ring-[var(--primary-color)]
+                                                     focus:border-[var(--primary-color)] transition"></textarea>
                     </div>
 
                     {{-- IMAGE FIELD + PREVIEW SIDE BY SIDE --}}
@@ -225,13 +246,13 @@
 
                         <div class="flex items-center gap-4">
                             <input type="file" name="menu_image" accept="image/*" @change="
-                                            const file = $event.target.files[0];
-                                            if(file){
-                                                edit.preview = URL.createObjectURL(file);
-                                            }
-                                       " class="w-full border border-gray-300 rounded-lg px-4 py-2
-                                              focus:ring-[var(--primary-color)]
-                                              focus:border-[var(--primary-color)] transition">
+                                                    const file = $event.target.files[0];
+                                                    if(file){
+                                                        edit.preview = URL.createObjectURL(file);
+                                                    }
+                                               " class="w-full border border-gray-300 rounded-lg px-4 py-2
+                                                      focus:ring-[var(--primary-color)]
+                                                      focus:border-[var(--primary-color)] transition">
 
                             {{-- IMAGE PREVIEW (MEDIUM SIZE) --}}
                             <template x-if="edit.preview || edit.image">
@@ -246,8 +267,8 @@
                     <div class="mb-5">
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Availability</label>
                         <select name="is_available" x-model="edit.availability" class="w-full border border-gray-300 rounded-lg px-4 py-2
-                                           focus:ring-[var(--primary-color)]
-                                           focus:border-[var(--primary-color)] transition">
+                                                   focus:ring-[var(--primary-color)]
+                                                   focus:border-[var(--primary-color)] transition">
                             <option value="1">Available</option>
                             <option value="0">Unavailable</option>
                         </select>
@@ -256,13 +277,13 @@
                     {{-- BUTTONS --}}
                     <div class="flex justify-end gap-4 mt-6">
                         <button type="button" @click="showEdit=false" class="px-5 py-2 rounded-lg border border-gray-300 text-gray-700
-                                           hover:bg-gray-100 transition font-medium">
+                                                   hover:bg-gray-100 transition font-medium">
                             Cancel
                         </button>
 
                         <button class="px-6 py-2 rounded-lg text-white font-semibold shadow
-                                           bg-[var(--primary-color)]
-                                           hover:bg-[var(--primary-hover)] transition">
+                                                   bg-[var(--primary-color)]
+                                                   hover:bg-[var(--primary-hover)] transition">
                             Update
                         </button>
                     </div>

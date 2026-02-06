@@ -145,6 +145,20 @@
                         </a>
                     </div>
                 </div>
+                <!-- END OF SETUPS DROPDOWN -->
+
+                <!-- Rooms -->
+                <a href="{{ route('admin.rooms.index') }}"
+                     class="flex items-center px-2 py-3 text-sm font-medium rounded-md
+                     {{ request()->routeIs('admin.rooms.*')
+                          ? 'text-[var(--sidebar-active-text)]'
+                          : 'text-gray-600' }}"
+                     style="{{ request()->routeIs('admin.rooms.*') ? 'background: var(--sidebar-active-bg)' : '' }}"
+                     onmouseover="this.style.background='{{ request()->routeIs('admin.rooms.*') ? 'var(--sidebar-active-bg)' : 'var(--sidebar-hover-bg)' }}'"
+                     onmouseout="this.style.background='{{ request()->routeIs('admin.rooms.*') ? 'var(--sidebar-active-bg)' : 'transparent' }}'">
+                    <i class="fas fa-bed mr-3"></i>
+                    Rooms
+                </a>
 
                 <!-- ADMINISTRATION SECTION (GREY LINE + TITLE) -->
                 <div class="pt-4 mt-4 border-t"

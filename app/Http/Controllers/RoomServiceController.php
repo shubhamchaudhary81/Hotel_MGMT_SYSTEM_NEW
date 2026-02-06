@@ -75,4 +75,18 @@ class RoomServiceController extends Controller
             ->route('admin.room-services.index')
             ->with('success', 'Room service deleted successfully.');
     }
+
+ public function updateStatus(Request $request, RoomService $room_service)
+{
+    $request->validate([
+        'availability_status' => 'required|in:available,unavailable'
+    ]);
+
+    $room_service->update([
+        'availability_status' => $request->availability_status
+    ]);
+
+    return redirect()->back()->with('success', 'Status updated successfully');
+}
+
 }

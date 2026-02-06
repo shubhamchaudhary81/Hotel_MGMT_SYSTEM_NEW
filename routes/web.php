@@ -13,7 +13,8 @@ use App\Http\Controllers\{
     RoleController,
     DepartmentController,
     SettingController,
-    MenuCategoryController
+    MenuCategoryController,
+    RoomController,
 };
 
 // Public Home Page
@@ -57,12 +58,36 @@ Route::middleware(['auth', 'hierarchy:2'])
             Route::resource('amenities', AmenityController::class);
             Route::resource('extra-services', ExtraServiceController::class);
             Route::resource('room-services', RoomServiceController::class);
+            Route::put('/room-services/{room_service}/status', [RoomServiceController::class, 'updateStatus'])
+                ->name('room-services.update-status');
             Route::resource('menu-items', MenuItemController::class);
+            Route::put('/menu-items/{menuItem}/status', [MenuItemController::class, 'updateStatus'])
+                ->name('menu-items.update-status');
+
 
             // MENU CATEGORIES (modal based)
             Route::post('menu-categories', [MenuCategoryController::class, 'store'])->name('menu-categories.store');
             Route::put('menu-categories/{category}', [MenuCategoryController::class, 'update'])->name('menu-categories.update');
             Route::delete('menu-categories/{category}', [MenuCategoryController::class, 'destroy'])->name('menu-categories.destroy');
+
+            // ROOMS
+            Route::get('/rooms', [RoomController::class, 'index'])
+                ->name('rooms.index');
+
+            Route::get('/rooms/create', [RoomController::class, 'create'])
+                ->name('rooms.create');
+
+            Route::post('/rooms', [RoomController::class, 'store'])
+                ->name('rooms.store');
+
+            Route::put('/rooms/{room}', [RoomController::class, 'update'])
+                ->name('rooms.update');
+
+            Route::delete('/rooms/{room}', [RoomController::class, 'destroy'])
+                ->name('rooms.destroy');
+
+            Route::put('/rooms/{room}/status', [RoomController::class, 'updateStatus'])
+                ->name('rooms.update-status');
 
             // STAFF MANAGEMENT
             Route::resource('staff', StaffController::class);
