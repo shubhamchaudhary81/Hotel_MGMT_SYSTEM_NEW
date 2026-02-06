@@ -12,7 +12,8 @@ use App\Http\Controllers\{
     StaffController,
     RoleController,
     DepartmentController,
-    SettingController
+    SettingController,
+    MenuCategoryController
 };
 
 // Public Home Page
@@ -24,7 +25,7 @@ Route::view('/', 'pages.home')->name('home');
 | AUTH ROUTES (Breeze)
 |--------------------------------------------------------------------------
 */
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 
 /*
@@ -57,6 +58,11 @@ Route::middleware(['auth', 'hierarchy:2'])
             Route::resource('extra-services', ExtraServiceController::class);
             Route::resource('room-services', RoomServiceController::class);
             Route::resource('menu-items', MenuItemController::class);
+
+            // MENU CATEGORIES (modal based)
+            Route::post('menu-categories', [MenuCategoryController::class, 'store'])->name('menu-categories.store');
+            Route::put('menu-categories/{category}', [MenuCategoryController::class, 'update'])->name('menu-categories.update');
+            Route::delete('menu-categories/{category}', [MenuCategoryController::class, 'destroy'])->name('menu-categories.destroy');
 
             // STAFF MANAGEMENT
             Route::resource('staff', StaffController::class);

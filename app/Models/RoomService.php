@@ -6,5 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class RoomService extends Model
 {
-    //
+    protected $fillable = [
+        'name',
+        'description',
+        'price',
+        'availability_status',
+    ];
 }
